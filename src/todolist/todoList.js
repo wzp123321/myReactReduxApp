@@ -1,28 +1,56 @@
 import React, { Component } from 'react';
 
-import store from "../store/index";
+import {connect} from "react-redux";
+
+import TodoListUI from "./todoListUI";
 
 class TodoList extends Component {
-    constructor(props) {
-        super(props);
-        this.state = { 
-            inputValue:store.getState().inputValue,
-            topicslist:store.getState().topicslist
-         }
-    }
     render() { 
+        // 解构赋值
+        let {inputValue,inputChange,topicslist,getItemDelete,clickAddItem} = this.props
         return (  
-            <div>
-                <input value={this.state.inputValue} onChange={this.inputChange}></input>
-                <button>添加</button>
-
-            </div>
+            <TodoListUI 
+            inputValue={inputValue}
+            inputChange={inputChange}
+            topicslist={topicslist}
+            getItemDelete={getItemDelete}
+            clickAddItem={clickAddItem}
+            />
         );
-    }
-
-    inputChange(e){
-        console.log(e);
     }
 }
  
-export default TodoList;
+// 第一个参数stateToProps：隐射关系
+const stateToProps = (state)=>{
+    return {
+        inputValue:state.inputValue,
+        topicslist:state.topicslist
+    }
+}
+
+// dispatch
+const dispatchToProps = (dispatch)=>{
+    return {
+        inputChange(e){
+           const action = {
+               type:"inputValueChange",
+               value:e.target.value
+           };
+           dispatch(action);
+        },
+        clickAddItem(){
+            const action = {
+                type:"clickadditem"
+            };
+            dispatch(action);
+        },
+        getItemDelete(index){
+            const action = {
+                type:"getItemDelete",
+                value:index
+            };
+            dispatch(action);
+        }
+    }
+}
+export default connect(stateToProps,dispatchToProps)(TodoList);
